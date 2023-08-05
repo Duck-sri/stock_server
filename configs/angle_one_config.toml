@@ -1,0 +1,67 @@
+timeout = 7
+
+    [urls]
+    root = "https://apiconnect.angelbroking.com"
+    publisher_login = "https://smartapi.angelbroking.com/publisher-login"
+
+    symboltoken_lookup = "https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json"
+
+    login = "/rest/auth/angelbroking/user/v1/loginByPassword"
+    logout = "/rest/secure/angelbroking/user/v1/logout"
+
+    generate_tokens = "/rest/auth/angelbroking/jwt/v1/generateTokens"
+    get_profile = "/rest/secure/angelbroking/user/v1/getProfile"
+
+
+    rms_limit = "/rest/secure/angelbroking/user/v1/getRMS"
+    holding = "/rest/secure/angelbroking/portfolio/v1/getHolding"
+
+        [urls.order]
+        place = "/rest/secure/angelbroking/order/v1/placeOrder"
+        modify = "/rest/secure/angelbroking/order/v1/modifyOrder"
+        cancel = "/rest/secure/angelbroking/order/v1/cancelOrder"
+        order_book = "/rest/secure/angelbroking/order/v1/getOrderBook"
+
+        ltp = "/rest/secure/angelbroking/order/v1/getLtpData"
+        trade_book = "/rest/secure/angelbroking/order/v1/getTradeBook"
+        position = "/rest/secure/angelbroking/order/v1/getPosition"
+        convert_position = "/rest/secure/angelbroking/order/v1/convertPosition"
+
+        [urls.historical]
+        candle = "/rest/secure/angelbroking/historical/v1/getCandleData"
+
+    [socket]
+    url = "ws://smartapisocket.angelone.in/smart-stream"
+    heartbeat_interval = 30
+
+
+[errors]
+"AG8001" = "Invalid Token"
+"AG8002" = "Token Expired"
+"AG8003" = "Token missing"
+"AB8050" = "Invalid Refresh Token"
+"AB8051" = "Refresh Token Expired"
+"AB1000" = "Invalid Email Or Password"
+"AB1001" = "Invalid Email"
+"AB1002" = "Invalid Password Length"
+"AB1003" = "Client Already Exists"
+"AB1004" = "Something Went Wrong, Please Try After Sometime"
+"AB1005" = "User Type Must Be USER"
+"AB1006" = "Client Is Block For Trading"
+"AB1007" = "AMX Error"
+"AB1008" = "Invalid Order Variety"
+"AB1009" = "Symbol Not Found"
+"AB1010" = "AMX Session Expired"
+"AB1011" = "Client not login"
+"AB1012" = "Invalid Product Type"
+"AB1013" = "Order not found"
+"AB1014" = "Trade not found"
+"AB1015" = "Holding not found"
+"AB1016" = "Position not found"
+"AB1017" = "Position conversion failed"
+"AB1018" = "Failed to get symbol details"
+"AB2000" = "Error not specified"
+"AB2001" = "Internal Error, Please try after sometime"
+"AB1031" = "Old Password Mismatch"
+"AB1032" = "User Not Found"
+"AB2002" = "ROBO order is block"
