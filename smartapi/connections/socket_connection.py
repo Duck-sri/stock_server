@@ -10,8 +10,8 @@ import threading
 
 from collections import defaultdict
 
-import utils
-from api_types import SubscribeAction, SubscriptionMode, ExchangeType
+import smartapi.utils as utils
+from smartapi.connections.api_types import SubscribeAction, SubscriptionMode, ExchangeType
 
 class SocketConnection:
 
@@ -87,9 +87,10 @@ class SocketConnection:
     def connect(self):
         """ Make the web socket connection with the server """
 
+        print("Connecting")
+
         if self.CONNECTION_ACTIVE or (self._ws_conn is not None):
-            print("Already exists an active connection!!!")
-            return
+            self._ws_conn.close()
 
         headers = {
             "Authorization": self.__jwt_token,
@@ -326,16 +327,10 @@ class SocketConnection:
         self.RESUBSCRIBE_FLAG = True
         
         self.on_error(ws_conn, error)
-
-        if self.current_retry_attempt < self.MAX_RETRY_ATTEMPT:
-            print("Trying to reconnect/resubscribe")
-            self.current_retry_attempt += 1
-
-            try:
-                self.close_connection()
-                self.connect()
-            except Exception as err:
-                print("Error occured while reconnect/resubscribe")
+        try:
+            self.close_connection()
+        except Exception as err:
+            print("Error occured, connection closed")
 
     def __handle_open(self, ws_conn):
         if self.RESUBSCRIBE_FLAG:
@@ -346,7 +341,6 @@ class SocketConnection:
 
     def __handle_close(self, ws_conn, *args):
         "Calls user defined on_close function"
-        self.on_close(ws_conn, *args)
         self.close_connection()
 
     def __handle_data(self, ws_conn, data, data_type, continue_flag: bool):

@@ -1,7 +1,7 @@
-from enum import StrEnum, IntEnum
+from enum import StrEnum, IntEnum, Enum
 from dataclasses import dataclass, asdict
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class TransactionType(StrEnum):
     BUY = 'BUY'

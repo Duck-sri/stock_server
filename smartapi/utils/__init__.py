@@ -29,6 +29,19 @@ def read_toml(file_path: Path) -> dict | None :
 
     return data
 
+
+def read_json(file_path: Path) -> dict | None :
+    if isinstance(file_path, str):
+        file_path = Path(file_path).absolute()
+
+    if not file_path.exists():
+        raise FileNotFoundError("Dude wtf !!")
+
+    with open(file_path.as_posix(), 'rb') as fp:
+        data = json.load(fp)
+
+    return data
+
 def get_public_ip(ip_check_url: str = None) -> str:
     if not isinstance(ip_check_url, str):
         ip_check_url = 'https://checkip.amazonaws.com'

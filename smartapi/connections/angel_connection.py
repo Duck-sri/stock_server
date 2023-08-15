@@ -14,11 +14,11 @@ import logging
 import traceback
 
 import pyotp
-import utils
-from api_types import Order, Exchange, Variety, Interval, SocketTask
 
-# FIXME better way to read configs
-angel_config = utils.read_toml(Path("./.config/angle_one_config.toml").absolute())
+import smartapi.utils as utils
+from smartapi.connections.api_types import Order, Exchange, Variety, Interval, SocketTask
+
+from smartapi.configs import angle_config
 
 # FIXME add logger class for all the transactions performed
 class SmartAPIConnect:
@@ -29,10 +29,10 @@ class SmartAPIConnect:
     # TODO add simulation with all checks with margin and stuff
     SIMULATION = True
 
-    ERROR_MAP = angel_config['errors']
-    TIMEOUT = angel_config['timeout']
+    ERROR_MAP = angle_config['errors']
+    TIMEOUT = angle_config['timeout']
 
-    URLS = angel_config['urls']
+    URLS = angle_config['urls']
     ROOT_URL = URLS['root']
 
     DISABLE_SSL = True
@@ -101,7 +101,7 @@ class SmartAPIConnect:
     @staticmethod
     def load_lookup_table() -> pd.DataFrame:
         "Loads & saves the lookup table from angleone for symbols and symboltokens wiz used for trading further"
-        lookup_dir = Path('./.lookup').absolute()
+        lookup_dir = (Path(__file__).parent / "../.lookup" ).absolute()
         lookup_dir.mkdir(exist_ok=True, parents=True)
 
         time_now = datetime.datetime.now()
@@ -116,9 +116,7 @@ class SmartAPIConnect:
             df = pd.read_csv(lookup_file.as_posix())
         else:
             print("Making a request")
-            # response = requests.get(angel_config['urls']['symboltoken_lookup'], verify=False)
-            # print(response.status_code)
-            df = pd.read_json(angel_config['urls']['symboltoken_lookup'])
+            df = pd.read_json(angle_config['urls']['symboltoken_lookup'])
             dtype_dict = {
                 'token' : str,
                 'symbol' : str,
@@ -223,7 +221,7 @@ class SmartAPIConnect:
     # TODO add RMS Limit checking
     # refer: https://smartapi.angelbroking.com/docs/User#Funds
 
-    def generate_session(self):
+    def generate_session(self) -> dict:
         """ Generate a session for the client """
 
         params = {
@@ -450,19 +448,24 @@ if __name__ == '__main__':
         api_key=user_config['keys']['trading']
     )
 
+
     session_data = api_obj.generate_session()
 
     try:
         today = datetime.datetime.today().replace(hour=9, minute=15, second=0, microsecond=0)
-        start_date = today - datetime.timedelta(days=3) + datetime.timedelta(hours=6, minutes=0)
-        end_date = start_date + datetime.timedelta(minutes=15)
 
-        print(start_date)
-        print(end_date)
+        token_map = api_obj.load_lookup_table(Path('/Users/you-know-who/Code/Project/stock_server/notebooks/token_map.json'))
+        tokens = list(token_map.keys())
 
-        # api_obj.load_lookup_table()
-        res = api_obj.get_candle_data(exchange=Exchange.NFO, symbol_token='48326', interval=Interval.ONE_MINUTE, start_date=start_date, end_date=end_date)
-        print(res)
+        for token in tokens:
+            res = api_obj.get_candle_data(
+                exchange=Exchange.NFO,
+                symbol_token=token,
+                interval=Interval.ONE_MINUTE,
+                start_date=(today - datetime.timedelta(days=4)),
+                end_date=today
+            )
+            print(res)
 
     except:
         traceback.print_exc()
